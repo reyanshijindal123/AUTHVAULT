@@ -79,7 +79,7 @@ export default function LoginPage() {
         className="space-y-4"
       >
         {error && (
-          <p className="text-red-400 text-center">
+          <p className="text-yellow-400 text-center" >
             {error}
           </p>
         )}

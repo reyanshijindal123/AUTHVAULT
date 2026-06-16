@@ -159,10 +159,10 @@ export default function SignupForm() {
           placeholder="Enter name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full p-3 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+          className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
         />
         {errors?.name && (
-          <span className="text-white-400 text-sm ">{errors?.name}</span>
+          <span className="text-yellow-400 text-sm ">{errors?.name}</span>
         )}
         </div>
 
@@ -172,20 +172,21 @@ export default function SignupForm() {
           placeholder="Enter Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+          className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
         />
         {errors?.email && (
-          <span className="text-white-400 text-sm mt-2">{errors?.email}</span>
+          <span className="text-yellow-400 text-sm">{errors?.email}</span>
         )}
 
         {/* Password */}
-        <div className="relative my-4">
+        <div className="relative mb-4">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 pr-12 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+           
+            className="w-full p-4 pr-12 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
           />
           
 
@@ -198,10 +199,25 @@ export default function SignupForm() {
           </button>
         </div>
         {errors.password && (
-            <p className="text-white-400 text-sm mt-1 mb-2 whitespace-pre-line">{errors.password}</p>
+            <p className="text-yellow-400 text-sm mt-1 mb-2 whitespace-pre-line">{errors.password}</p>
           )}
-          <div> Eg:
-       TaskVault@123 (minimum 8 chars with uppercase, lowercase, number and special chars)</div>
+          {(
+  password.length > 0 ||
+  confirmPassword.length > 0
+) &&
+!(
+  password === confirmPassword &&
+  password.length >= 8 &&
+  /[A-Z]/.test(password) &&
+  /[a-z]/.test(password) &&
+  /[0-9]/.test(password) &&
+  /[!@#$%^&*]/.test(password)
+) && (
+  <p className="text-sm text-gray-200 mt-2">
+    Example: TaskVault@123 (minimum 8 characters with uppercase, lowercase, number and special character)
+  </p>
+)}
+            
           
 
         {/* Confirm Password */}
@@ -211,7 +227,7 @@ export default function SignupForm() {
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-3 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+            className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
           />
 
           <button
@@ -224,7 +240,7 @@ export default function SignupForm() {
         </div>
 
         {errors.confirmPassword && (
-          <p className="text-white-400 text-sm">{errors.confirmPassword}</p>
+          <p className="text-yellow-400 text-sm">{errors.confirmPassword}</p>
         )}
 
         {/* Submit */}
@@ -233,7 +249,7 @@ export default function SignupForm() {
           // type="button"
           className="w-full bg-white text-purple-600 font-bold py-3 rounded-xl hover:scale-105 transition-all duration-300 active:scale-95"
         >
-          Sign Up Submit
+          Sign Up
         </button>
       </form>
 

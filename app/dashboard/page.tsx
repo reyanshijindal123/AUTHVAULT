@@ -29,6 +29,8 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
   const [search, setSearch] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [dueTime, setDueTime] = useState("");
@@ -79,18 +81,28 @@ export default function Dashboard() {
   setDueTime("");
   setPriority("Low");
 };
- const deleteTask = (index: number) => {
-    setTasks(tasks.filter((_, i) => i !== index));
+ const deleteTask = (id: number) => {
+    setTasks(tasks.filter((task) => task.id !== id));
   };
-
-  const toggleTask = (index: number) => {
-    const updatedTasks = [...tasks];
-
-    updatedTasks[index].completed = !updatedTasks[index].completed;
-
-    setTasks(updatedTasks);
+  const editTask = (id: number ,newText:string) => {
+    setTasks(
+      tasks.map((task)=>
+      task.id===id
+    ?{...task,text:newText}
+    : task
+  )
+    );
   };
-
+  const toggleTask = (id: number) => {
+    setTasks(
+      tasks.map((task)=>
+      task.id===id
+    ?{...task,completed: !task.completed}
+    :task
+  )
+    );
+  };
+    
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("currentUser");
@@ -155,9 +167,12 @@ export default function Dashboard() {
             <input
               value={task}
   onChange={(e) => setTask(e.target.value)}
+  onKeyDown={(e) => {    if (e.key === "Enter") {
+      addTask();
+    }  }} 
   placeholder="Enter task..."
   className="
-    flex-1
+  flex-1
     p-4
     rounded-xl
     bg-white
@@ -180,23 +195,34 @@ export default function Dashboard() {
           <div className="mt-6 space-y-3">
   {tasks
     .filter((item) =>
-      item.text.toLowerCase().includes(search.toLowerCase())
+      item.text.toLowerCase().includes(search.toLowerCase()) 
     )
-    .map((item, index) => (
+    .map((item) => (
       <div
         key={item.id}
         className="flex justify-between items-center bg-white/10 p-4 rounded-xl"
       >
+
+        {/* LEFT SIDE */}
         <div className="flex items-center gap-3">
+
+          {/* CHECKBOX */}
           <input
             type="checkbox"
             checked={item.completed}
-            onChange={() => toggleTask(index)}
+            onChange={() => toggleTask(item.id)}
             className="w-5 h-5 cursor-pointer"
           />
 
-          <div>
-            <p
+          {/* TEXT / EDIT INPUT */}
+          {editingId === item.id ? (
+            <input
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              className="p-2 text-black rounded"
+            />
+          ) : (
+            <span
               className={
                 item.completed
                   ? "line-through text-gray-300"
@@ -204,38 +230,54 @@ export default function Dashboard() {
               }
             >
               {item.text}
-            </p>
+            </span>
+          )}
 
-            <p className="text-sm text-gray-300">
-              📅 {item.dueDate}
-            </p>
-
-            <p className="text-sm text-gray-300">
-              ⏰ {item.dueTime}
-            </p>
-
-            <p className="text-sm text-yellow-300">
-              🔥 {item.priority}
-            </p>
-          </div>
         </div>
 
-        <button
-          onClick={() => deleteTask(index)}
-          className="bg-red-500 px-3 py-1 rounded-lg"
-        >
-          Delete
-        </button>
+        {/* RIGHT SIDE BUTTONS */}
+        <div className="flex gap-2">
+
+          {/* EDIT BUTTON */}
+          <button
+            onClick={() => {
+              setEditingId(item.id);
+              setEditText(item.text);
+            }}
+            className="bg-yellow-500 px-5 py-2 rounded-lg"
+          >
+            Edit
+          </button>
+
+          {/* SAVE BUTTON */}
+          <button
+            onClick={() => {
+
+              if(!editText.trim())return;
+              editTask(item.id, editText);
+              setEditingId(null);
+              setEditText("");
+            }}
+            className="bg-green-500 px-5 py-2 rounded-lg"
+          >
+            Save
+          </button>
+
+          {/* DELETE BUTTON */}
+          <button
+            onClick={() => deleteTask(item.id)}
+            className="bg-red-500 px-5 py-2 rounded-lg"
+          >
+            Delete
+          </button>
+
+        </div>
+
       </div>
     ))}
 </div>
-
         </div>
       </div>
     </main>
   );
 }
-
-
-
-
