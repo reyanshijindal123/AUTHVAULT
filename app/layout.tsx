@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Auth Dashboard",
-  description: "Authentication Project",
+  title: "Task Vault",
+  description: "Todo app built for task planning",
 };
 
 export default function RootLayout({

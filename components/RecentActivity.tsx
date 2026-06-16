@@ -1,7 +1,7 @@
 export default function RecentActivity(){
     const activities =[
         "Logges In",
-        "Pdated Profile",
+        "Updated Profile",
         "Changed Password",
 
     ];

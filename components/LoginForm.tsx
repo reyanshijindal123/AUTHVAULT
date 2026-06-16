@@ -2,161 +2,141 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaUserCircle } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
-
-export default function LoginForm() {
+import Link from "next/link";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useEffect } from "react";
+export default function LoginPage() {
   const router = useRouter();
+  useEffect(() => {
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  if (isLoggedIn === "true") {
+    router.push("/dashboard");
+  }
+}, [router]);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError("");
+
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    setError("");
+    const { email, password } = formData;
 
-    const storedUser = localStorage.getItem("user");
-
-    if (!storedUser) {
-      setError("No user found. Please signup first.");
+    if (!email.trim() || !password.trim()) {
+      setError("All fields are required");
       return;
     }
 
-    const user = JSON.parse(storedUser);
+    const users = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
 
-    if (
-      email === user.email &&
-      password === user.password
-    ) {
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
+    const user = users.find(
+      (u: any) =>
+        u.email === email &&
+        u.password === password
+    );
 
-      router.push("/dashboard");
-    } else {
-      setError("Invalid Credentials");
+    if (!user) {
+      setError("Invalid email or password");
+      return;
     }
+
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(user)
+    );
+
+    alert("Login Successful");
+
+    router.push("/dashboard");
   };
 
   return (
-    <div
-      className="
-      w-full
-      max-w-md
-      bg-white/20
-      backdrop-blur-lg
-      border
-      border-white/20
-      shadow-2xl
-      rounded-3xl
-      p-8
-      text-white
-      "
-    >
-      <div className="flex flex-col items-center">
-        <FaUserCircle size={80} />
-
-        <h1 className="text-3xl font-bold mt-4">
-          Login
-        </h1>
-
-        <p className="text-sm mt-2 text-gray-200">
-          Welcome Back
-        </p>
-      </div>
+    <div className="w-full max-w-md mx-auto mt-20 bg-white/20 backdrop-blur-lg border border-white/20 shadow-2xl rounded-3xl p-8 text-white">
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Login
+      </h1>
 
       <form
         onSubmit={handleLogin}
-        className="mt-8 space-y-4"
+        className="space-y-4"
       >
         {error && (
-          <p className="text-red-300 text-center">
+          <p className="text-red-400 text-center">
             {error}
           </p>
         )}
 
         <input
+          name="email"
           type="email"
           placeholder="Enter Email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          className="
-          w-full
-          p-3
-          rounded-xl
-          bg-white/20
-          outline-none
-          border
-          border-white/30
-          placeholder:text-gray-200
-          "
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-3 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
         />
 
-        <input
-          type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          className="
-          w-full
-          p-3
-          rounded-xl
-          bg-white/20
-          outline-none
-          border
-          border-white/30
-          placeholder:text-gray-200
-          "
-        />
+        <div className="relative">
+          <input
+            name="password"
+            type={
+              showPassword ? "text" : "password"
+            }
+            placeholder="Enter Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-3 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+          />
+
+          <button
+            type="button"
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
+            className="absolute right-4 top-1/2 -translate-y-1/2"
+          >
+            {showPassword ? (
+              <FaEyeSlash />
+            ) : (
+              <FaEye />
+            )}
+          </button>
+        </div>
 
         <button
           type="submit"
-          className="
-          w-full
-          bg-white
-          text-purple-600
-          font-bold
-          py-3
-          rounded-xl
-          hover:scale-105
-          transition-all
-          duration-300
-          "
+          className="w-full bg-white text-purple-600 font-bold py-3 rounded-xl hover:scale-105 transition-all duration-300"
         >
           Login
         </button>
       </form>
 
-      <div className="mt-6 text-center">
-        <p className="text-sm">
-          Or continue with
-        </p>
-
-        <button
-          className="
-          mt-4
-          flex
-          items-center
-          justify-center
-          gap-2
-          w-full
-          bg-white
-          text-black
-          p-3
-          rounded-xl
-          "
+      <p className="text-center mt-6 text-sm text-gray-200">
+        Don't have an account?
+        <Link
+          href="/signup"
+          className="ml-2 font-bold text-white hover:underline"
         >
-          <FcGoogle size={24} />
-          Google
-        </button>
-      </div>
+          Sign Up
+        </Link>
+      </p>
     </div>
   );
 }

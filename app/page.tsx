@@ -6,11 +6,12 @@ export default function Home() {
       <div className="max-w-2xl w-full text-center bg-white/20 backdrop-blur-lg border border-white/20 shadow-2xl rounded-3xl p-10 text-white">
 
         <h1 className="text-5xl font-bold mb-4">
-          AuthVault
+          TaskVault
         </h1>
 
         <p className="text-lg mb-8">
-          Modern Authentication Dashboard
+          Todo app built for task planning
+      
         </p>
 
         <div className="flex justify-center gap-4">
