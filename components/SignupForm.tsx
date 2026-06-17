@@ -24,6 +24,7 @@ export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const[passwordHint, setPasswordHint] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -153,42 +154,94 @@ export default function SignupForm() {
         {/* Error Messages (safe fallback) */}
 
         <div className="space-y-2">
-        {/* Name */}
-        <input
-          type="name"
-          placeholder="Enter name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
-        />
+          <input
+  type="name"
+  placeholder="Enter name"
+  value={name}
+  onChange={(e) => {
+    const value = e.target.value;
+    setName(value);
+
+    setErrors((prev) => ({
+      ...prev,
+      name: value.trim() ? "" : "Name is required",
+    }));
+  }}
+  className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+/>
+
         {errors?.name && (
           <span className="text-yellow-400 text-sm ">{errors?.name}</span>
         )}
         </div>
 
         {/* Email */}
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
-        />
+        <div className="space-y-2">
+          <input
+  type="email"
+  placeholder="Enter Email"
+  value={email}
+  onChange={(e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    let emailError = "";
+
+    if (!value.trim()) {
+      emailError = "Email is required";
+    } else if (!emailRegex.test(value)) {
+      emailError = "Please enter a valid email";
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      email: emailError,
+    }));
+  }}
+  className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+/>
+        
         {errors?.email && (
           <span className="text-yellow-400 text-sm">{errors?.email}</span>
-        )}
+        )}</div>
+
 
         {/* Password */}
-        <div className="relative mb-4">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-           
-            className="w-full p-4 pr-12 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+<div className="relative mb-4">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter Password"
+    value={password}
+    onChange={(e) => {
+  const value = e.target.value;
+  setPassword(value);
+
+  // Required field error remove/add
+  setErrors((prev) => ({
+    ...prev,
+    password: value.trim() ? "" : "Password is required",
+  }));
+
+  // Password validation hint
+  const isValid =
+    value.length >= 8 &&
+    /[A-Z]/.test(value) &&
+    /[a-z]/.test(value) &&
+    /[0-9]/.test(value) &&
+    /[!@#$%^&*]/.test(value);
+
+              if (!isValid && value.length > 0) {
+                setPasswordHint(
+                  "Example: TaskVault@123 (minimum 8 characters with uppercase, lowercase, number and special character)"
+                );
+              } else {
+                setPasswordHint("");
+              }
+            }}
+            className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
           />
-          
 
           <button
             type="button"
@@ -198,38 +251,40 @@ export default function SignupForm() {
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
+
         {errors.password && (
-            <p className="text-yellow-400 text-sm mt-1 mb-2 whitespace-pre-line">{errors.password}</p>
-          )}
-          {(
-  password.length > 0 ||
-  confirmPassword.length > 0
-) &&
-!(
-  password === confirmPassword &&
-  password.length >= 8 &&
-  /[A-Z]/.test(password) &&
-  /[a-z]/.test(password) &&
-  /[0-9]/.test(password) &&
-  /[!@#$%^&*]/.test(password)
-) && (
+          <p className="text-yellow-400 text-sm mt-1 mb-2 whitespace-pre-line">
+            {errors.password}
+          </p>
+        )}
+
+{passwordHint && (
   <p className="text-sm text-gray-200 mt-2">
-    Example: TaskVault@123 (minimum 8 characters with uppercase, lowercase, number and special character)
+    {passwordHint}
   </p>
 )}
-            
-          
 
+
+        
         {/* Confirm Password */}
         <div className="relative">
           <input
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
-          />
+  type={showConfirmPassword ? "text" : "password"}
+  placeholder="Confirm Password"
+  value={confirmPassword}
+  onChange={(e) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
 
+    setErrors((prev) => ({
+      ...prev,
+      confirmPassword: value.trim()
+        ? ""
+        : "Confirm Password is required",
+    }));
+  }}
+  className="w-full p-4 pr-12 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+/>
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
