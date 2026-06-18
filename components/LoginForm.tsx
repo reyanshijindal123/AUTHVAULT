@@ -8,14 +8,12 @@ import { useEffect } from "react";
 export default function LoginPage() {
   const router = useRouter();
   useEffect(() => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-
-  if (isLoggedIn === "true") {
+  if (localStorage.getItem("isLoggedIn") === "true") {
     router.push("/dashboard");
   }
 }, [router]);
-
-  const [formData, setFormData] = useState({
+  
+const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
@@ -24,14 +22,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError("");
-
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
+  setError("");
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -42,14 +38,10 @@ export default function LoginPage() {
       return;
     }
 
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
 
     const user = users.find(
-      (u: any) =>
-        u.email === email &&
-        u.password === password
+      (u: any) => u.email === email && u.password === password,
     );
 
     if (!user) {
@@ -58,10 +50,7 @@ export default function LoginPage() {
     }
 
     localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify(user)
-    );
+    localStorage.setItem("currentUser", JSON.stringify(user));
 
     alert("Login Successful");
 
@@ -70,19 +59,10 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md mx-auto mt-20 bg-white/20 backdrop-blur-lg border border-white/20 shadow-2xl rounded-3xl p-8 text-white">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Login
-      </h1>
+      <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
 
-      <form
-        onSubmit={handleLogin}
-        className="space-y-4"
-      >
-        {error && (
-          <p className="text-yellow-400 text-center" >
-            {error}
-          </p>
-        )}
+      <form onSubmit={handleLogin} className="space-y-4">
+        {error && <p className="text-yellow-400 text-center">{error}</p>}
 
         <input
           name="email"
@@ -96,9 +76,7 @@ export default function LoginPage() {
         <div className="relative">
           <input
             name="password"
-            type={
-              showPassword ? "text" : "password"
-            }
+            type={showPassword ? "text" : "password"}
             placeholder="Enter Password"
             value={formData.password}
             onChange={handleChange}
@@ -107,23 +85,17 @@ export default function LoginPage() {
 
           <button
             type="button"
-            onClick={() =>
-              setShowPassword(!showPassword)
-            }
+            onClick={() => setShowPassword(!showPassword)}
             className="absolute right-4 top-1/2 -translate-y-1/2"
           >
-            {showPassword ? (
-              <FaEyeSlash />
-            ) : (
-              <FaEye />
-            )}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
 
         <button
           type="submit"
           className="w-full bg-white text-purple-600 font-bold py-3 rounded-xl hover:scale-105 transition-all duration-300"
-        >
+  >
           Login
         </button>
       </form>

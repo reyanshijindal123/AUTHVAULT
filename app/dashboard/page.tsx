@@ -2,25 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import TaskForm from "@/components/TaskForm";
-import TaskCard from "@/components/TaskCard";
-import SearchBar from "@/components/SearchBar";
-import CalendarView from "@/components/CalendarView";
-
-type User = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-type Task = {
-  id: number;
-  text: string;
-  dueDate: string;
-  dueTime: string;
-  priority: string;
-  completed: boolean;
-};
+import type { User } from "@/app/types/user";
+import type { Task } from "@/app/types/task";
+import StatsCard from "@/components/StatsCard";
+import Modal from "@/components/Modal";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -34,6 +19,7 @@ export default function Dashboard() {
   const [dueDate, setDueDate] = useState("");
   const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState("Low");
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   // Load user + auth check
   useEffect(() => {
@@ -136,150 +122,162 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-4 mt-6">
-          <div className="bg-white/20 backdrop-blur-lg p-6 rounded-3xl text-white">
-            <h2>Total Tasks</h2>
-
-            <p className="text-4xl font-bold">{totalTasks}</p>
-          </div>
-
-          <div className="bg-white/20 backdrop-blur-lg p-6 rounded-3xl text-white">
-            <h2>Completed</h2>
-
-            <p className="text-4xl font-bold">{completedTasks}</p>
-          </div>
-
-          <div className="bg-white/20 backdrop-blur-lg p-6 rounded-3xl text-white">
-            <h2>Pending</h2>
-
-            <p className="text-4xl font-bold">{pendingTasks}</p>
-          </div>
-        </div>
+        <StatsCard
+          totalTasks={totalTasks}
+          completedTasks={completedTasks}
+          pendingTasks={pendingTasks}
+        />
 
         {/* Task Manager */}
         <form>
-        <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-6 mt-6 text-white">
-          <h2 className="text-2xl font-bold mb-4">Task Manager</h2>
+          <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-6 mt-6 text-white">
+            <h2 className="text-2xl font-bold mb-4">Task Manager</h2>
 
-          <div className="flex flex-col  gap-3">
-            <textarea
-              value={task}
-              onChange={(e) => setTask(e.target.value)}
-              onKeyDown={(e)=>{
-                if(e.key==="Enter"){
-                  e.preventDefault();
-                  addTask();
-                }
-              }}
-              placeholder="Enter task..."
-              rows={3}
-              className=" w-full min-h-[100px] p-4 rounded-xl bg-white text-black border-2 border-gray-300 shadow-md outline-none focus:border-purple-500 resize-y overflow-auto"
+            <div className="flex flex-col  gap-3">
+              <textarea
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTask();
+                  }
+                }}
+                placeholder="Enter task..."
+                rows={3}
+                className=" w-full min-h-[100px] p-4 rounded-xl bg-white text-black border-2 border-gray-300 shadow-md outline-none focus:border-purple-500 resize-y overflow-auto"
               />
-            <button
-              type="button"
-              onClick={addTask}
-              className="self-end bg-white text-purple-600 px-5 py-3 rounded-xl font-bold"
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="self-end bg-white text-purple-600 px-5 py-3 rounded-xl font-bold"
               >
-                Add
-            </button>
-          </div>
-          <div className="mt-6 space-y-3">
-            {tasks
-              .filter((item) =>
-                item.text.toLowerCase().includes(search.toLowerCase()),
-              ) 
-              .map((item) => (
-                
-                <div
-                  key={item.id}
-                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/10 p-4 rounded-xl">
-                  {/* LEFT SIDE */}
-                  <div className="flex items-center gap-3 min-w-0">
-                    {/* CHECKBOX */}
-                    {editingId !== item.id && (
-                      <input
-                        type="checkbox"
-                        checked={item.completed}
-                        onChange={() => toggleTask(item.id)}
-                        className="w-5 h-5 cursor-pointer"
-                      />
-                    )}
+                Add Task
+              </button>
+            </div>
 
-                    {/* TEXT / EDIT INPUT */}
-                    {editingId === item.id ? (
-                      <input
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        className="p-2 text-black rounded bg-white outline-none"
-                      />
-                    ) : (
-                      <span
-                        className={`break-words ${
-                          item.completed
-                            ? "line-through text-gray-300"
-                            : "text-white"
-                        }`}
-                      >
-                        {item.text}
-                      </span>
-                    )}
+            <div className="mt-6 space-y-3">
+              {tasks
+                .filter((item) =>
+                  item.text.toLowerCase().includes(search.toLowerCase()),
+                )
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/10 p-4 rounded-xl"
+                  >
+                    {/* LEFT SIDE */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      {/* CHECKBOX */}
+                      {editingId !== item.id && (
+                        <input
+                          type="checkbox"
+                          checked={item.completed}
+                          onChange={() => toggleTask(item.id)}
+                          className="w-5 h-5 cursor-pointer"
+                        />
+                      )}
+
+                      {/* TEXT / EDIT INPUT */}
+                      {editingId === item.id ? (
+                        <input
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          className="p-2 text-black rounded bg-white outline-none"
+                        />
+                      ) : (
+                        <span
+                          className={`break-words ${
+                            item.completed
+                              ? "line-through text-gray-300"
+                              : "text-white"
+                          }`}
+                        >
+                          {item.text}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* RIGHT SIDE BUTTONS */}
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                      {editingId === item.id ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              if (!editText.trim()) return;
+
+                              editTask(item.id, editText);
+                            }}
+                            className="flex-1 sm:flex-none bg-green-500 px-4 py-2 rounded-lg"
+                          >
+                            Save
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setEditingId(null);
+                              setEditText("");
+                            }}
+                            className="flex-1 sm:flex-none bg-gray-500 px-4 py-2 rounded-lg"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setEditingId(item.id);
+                              setEditText(item.text);
+                            }}
+                            className="flex-1 sm:flex-none bg-yellow-500 px-4 py-2 rounded-lg"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => deleteTask(item.id)}
+                            className="flex-1 sm:flex-none bg-red-500 px-4 py-2 rounded-lg"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
-
-                  {/* RIGHT SIDE BUTTONS */}
-                  <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                    {editingId === item.id ? (
-                      <>
-                        <button
-                          onClick={() => {
-                            if (!editText.trim()) return;
-
-                            editTask(item.id, editText);
-                          }}
-                          className="flex-1 sm:flex-none bg-green-500 px-4 py-2 rounded-lg"
-                        >
-                          Save
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            setEditingId(null);
-                            setEditText("");
-                          }}
-                          className="flex-1 sm:flex-none bg-gray-500 px-4 py-2 rounded-lg"
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => {
-                            setEditingId(item.id);
-                            setEditText(item.text);
-                          }}
-                          className="flex-1 sm:flex-none bg-yellow-500 px-4 py-2 rounded-lg"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => deleteTask(item.id)}
-                          className="flex-1 sm:flex-none bg-red-500 px-4 py-2 rounded-lg"
-                        >
-                          Delete
-                        </button> 
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
-        </div>
         </form>
       </div>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <h2 className="text-2xl font-bold mb-4 text-black">Add New Task</h2>
+
+        <input
+          type="text"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          placeholder="Enter Task"
+          className=" w-full border p-3 rounded-xl text-black"
+        />
+
+        <button
+          onClick={() => {
+            addTask();
+            setShowModal(false);
+          }}
+          className="
+      mt-4
+      w-full
+      bg-green-500
+      text-white
+      py-2
+      rounded-xl
+    "
+        >
+          Save Task
+        </button>
+      </Modal>
     </main>
   );
-
 }
-

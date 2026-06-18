@@ -13,18 +13,18 @@ import type { User } from "@/app/types/user";
 export default function SignupForm() {
   const router = useRouter();
   useEffect(() => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-  if (isLoggedIn === "true") {
-    router.push("/dashboard");
-  }
-}, [router]);
+    if (isLoggedIn === "true") {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const[passwordHint, setPasswordHint] = useState("");
+  const [passwordHint, setPasswordHint] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -38,8 +38,8 @@ export default function SignupForm() {
   });
 
   const handleSignup = (e: React.FormEvent) => {
-    console.log("Submit button click")
-    
+    console.log("Submit button click");
+
     e.preventDefault();
 
     const newErrors = {
@@ -61,7 +61,6 @@ export default function SignupForm() {
     if (!password.trim()) {
       newErrors.password = "Password is required";
     }
-    
 
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = "Confirm Password is required";
@@ -89,7 +88,6 @@ export default function SignupForm() {
       }));
       return;
     }
-    
 
     // Password Match Validation
     if (password !== confirmPassword) {
@@ -99,8 +97,8 @@ export default function SignupForm() {
       }));
       return;
     }
-    
-  // Get Existing Users
+
+    // Get Existing Users
     const storedUsers = localStorage.getItem("users");
 
     const users: User[] = storedUsers ? JSON.parse(storedUsers) : [];
@@ -155,86 +153,86 @@ export default function SignupForm() {
 
         <div className="space-y-2">
           <input
-  type="name"
-  placeholder="Enter name"
-  value={name}
-  onChange={(e) => {
-    const value = e.target.value;
-    setName(value);
+            type="name"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => {
+              const value = e.target.value;
+              setName(value);
 
-    setErrors((prev) => ({
-      ...prev,
-      name: value.trim() ? "" : "Name is required",
-    }));
-  }}
-  className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
-/>
+              setErrors((prev) => ({
+                ...prev,
+                name: value.trim() ? "" : "Name is required",
+              }));
+            }}
+            className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+          />
 
-        {errors?.name && (
-          <span className="text-yellow-400 text-sm ">{errors?.name}</span>
-        )}
+          {errors?.name && (
+            <span className="text-yellow-400 text-sm ">{errors?.name}</span>
+          )}
         </div>
 
         {/* Email */}
         <div className="space-y-2">
           <input
-  type="email"
-  placeholder="Enter Email"
-  value={email}
-  onChange={(e) => {
-    const value = e.target.value;
-    setEmail(value);
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => {
+              const value = e.target.value;
+              setEmail(value);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    let emailError = "";
+              let emailError = "";
 
-    if (!value.trim()) {
-      emailError = "Email is required";
-    } else if (!emailRegex.test(value)) {
-      emailError = "Please enter a valid email";
-    }
+              if (!value.trim()) {
+                emailError = "Email is required";
+              } else if (!emailRegex.test(value)) {
+                emailError = "Please enter a valid email";
+              }
 
-    setErrors((prev) => ({
-      ...prev,
-      email: emailError,
-    }));
-  }}
-  className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
-/>
-        
-        {errors?.email && (
-          <span className="text-yellow-400 text-sm">{errors?.email}</span>
-        )}</div>
+              setErrors((prev) => ({
+                ...prev,
+                email: emailError,
+              }));
+            }}
+            className="w-full p-4 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+          />
 
+          {errors?.email && (
+            <span className="text-yellow-400 text-sm">{errors?.email}</span>
+          )}
+        </div>
 
         {/* Password */}
-<div className="relative mb-4">
-  <input
-    type={showPassword ? "text" : "password"}
-    placeholder="Enter Password"
-    value={password}
-    onChange={(e) => {
-  const value = e.target.value;
-  setPassword(value);
+        <div className="relative mb-4">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPassword(value);
 
-  // Required field error remove/add
-  setErrors((prev) => ({
-    ...prev,
-    password: value.trim() ? "" : "Password is required",
-  }));
+              // Required field error remove/add
+              setErrors((prev) => ({
+                ...prev,
+                password: value.trim() ? "" : "Password is required",
+              }));
 
-  // Password validation hint
-  const isValid =
-    value.length >= 8 &&
-    /[A-Z]/.test(value) &&
-    /[a-z]/.test(value) &&
-    /[0-9]/.test(value) &&
-    /[!@#$%^&*]/.test(value);
+              // Password validation hint
+              const isValid =
+                value.length >= 8 &&
+                /[A-Z]/.test(value) &&
+                /[a-z]/.test(value) &&
+                /[0-9]/.test(value) &&
+                /[!@#$%^&*]/.test(value);
 
               if (!isValid && value.length > 0) {
                 setPasswordHint(
-                  "Example: TaskVault@123 (minimum 8 characters with uppercase, lowercase, number and special character)"
+                  "Example: TaskVault@123 (minimum 8 characters with uppercase, lowercase, number and special character)",
                 );
               } else {
                 setPasswordHint("");
@@ -258,33 +256,29 @@ export default function SignupForm() {
           </p>
         )}
 
-{passwordHint && (
-  <p className="text-sm text-gray-200 mt-2">
-    {passwordHint}
-  </p>
-)}
+        {passwordHint && (
+          <p className="text-sm text-gray-200 mt-2">{passwordHint}</p>
+        )}
 
-
-        
         {/* Confirm Password */}
         <div className="relative">
           <input
-  type={showConfirmPassword ? "text" : "password"}
-  placeholder="Confirm Password"
-  value={confirmPassword}
-  onChange={(e) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => {
+              const value = e.target.value;
+              setConfirmPassword(value);
 
-    setErrors((prev) => ({
-      ...prev,
-      confirmPassword: value.trim()
-        ? ""
-        : "Confirm Password is required",
-    }));
-  }}
-  className="w-full p-4 pr-12 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
-/>
+              setErrors((prev) => ({
+                ...prev,
+                confirmPassword: value.trim()
+                  ? ""
+                  : "Confirm Password is required",
+              }));
+            }}
+            className="w-full p-4 pr-12 rounded-xl bg-white/20 border border-white/30 outline-none placeholder:text-gray-200"
+          />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
