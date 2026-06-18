@@ -8,14 +8,7 @@ export default function Sidebar() {
                 </h1>
 
                 <div>
-                    <aside className="
-                    w-64
-                    bg-white/20
-                    backdrop-blur-lg
-                    border-r
-                    border-white/20
-                    p-6
-                    "
+                    <aside className=" w-64 bg-white/20 backdrop-blur-lg border-r border-white/2"
                     >Sidebar
                     </aside>
                     <Link href="/dashboard" className="block hover:bg-slate-700 p-2 rounded">
